@@ -1,6 +1,7 @@
 import pandas as pd
 import randomName
 import numpy as np
+import random
 
 
 # Function to generate job roles and types then appends to the existing dataFrame
@@ -18,13 +19,27 @@ def generate_jobs(df):
     df["Type"] = job_type
 
 
+def generate_total_hours(df):
+    def generate_hours(row):
+        if row["Type"] == "FT":
+            return random.randint(130, 150)
+        elif row["Type"] == "PT":
+            return random.randint(60, 110)
+        else:
+            return 0
+
+    df["Total Hours"] = df.apply(generate_hours, axis=1)
+
+
 def create_data():
     # Create DataFrame with a column "Name"
     df = pd.DataFrame({"Name": randomName.generate_names()})
     generate_jobs(df)
-    # Display the DataFrame
-    # Reorder columns for organization
-    df = df[["Jobs", "Type", "Name"]]
+    generate_total_hours(df)
+
+    # Display the DataFrame and reorder columns for organization
+    df = df[["Jobs", "Type", "Name", "Total Hours"]]
+    df = df.sort_values(by=["Jobs", "Name"])
     print(df)
 
 
