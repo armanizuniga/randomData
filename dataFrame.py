@@ -166,12 +166,13 @@ def create_data(period="monthly"):
     df = pd.DataFrame({"Name": randomName.generate_names()})
     df = generate_jobs(df)
 
-    # Apply time scaling based on period
+    # Generate total hours dependent on period
     if period == "weekly":
         df = generate_total_hours(df, is_weekly=True)
     else:  # monthly (default)
         df = generate_total_hours(df)
 
+    # Call to functions that generate metrics
     df = hour_distribution_engine.distribute_hours(df)
     df = add_sessions(df)
     df = add_customers_helped(df)
@@ -179,6 +180,7 @@ def create_data(period="monthly"):
     df = add_duration(df)
     df = generate_sur_and_opportunities(df)
 
+    # Generate surveys and business intro metrics dependent on period
     if period == "weekly":
         df = nps_medallia_model.generate_nps(df, is_weekly=True)
         df = generate_business_intros(df, is_weekly=True)
@@ -201,5 +203,4 @@ def create_data(period="monthly"):
     with open(output_file, "w") as f:
         f.write(df.to_string(index=False))
 
-
-create_data("weekly")
+    return df
