@@ -37,15 +37,25 @@ def generate_jobs(df):
     return df
 
 
-# Function to generate the total amount of hours worked for part-time and full-time employees
-def generate_total_hours(df):
+# Function to generate the total amount of hours worked for part-time and full-time employees (weekly or monthly)
+def generate_total_hours(df, is_weekly=False):
     def generate_hours(row):
-        if row["Type"] == "FT":
-            return random.randint(130, 150)
-        elif row["Type"] == "PT":
-            return random.randint(60, 110)
+        if is_weekly:
+            # Scale down for weekly metrics (roughly 1/4 of monthly)
+            if row["Type"] == "FT":
+                return random.randint(32, 40)  # Weekly full-time
+            elif row["Type"] == "PT":
+                return random.randint(15, 28)  # Weekly part-time
+            else:
+                return 0
         else:
-            return 0
+            # Original monthly logic
+            if row["Type"] == "FT":
+                return random.randint(130, 150)
+            elif row["Type"] == "PT":
+                return random.randint(60, 110)
+            else:
+                return 0
 
     # Applies above function to the Type columns and generates a new column to add to the existing dataFrame
     df["Total Hours"] = df.apply(generate_hours, axis=1)
@@ -139,26 +149,42 @@ def generate_sur_and_opportunities(df):
     return df
 
 
-# Function to generate random business intro metrics
-def generate_business_intros(df):
-    df["Business Intros"] = [random.randint(0, 10) for _ in range(len(df))]
+# Function to generate random business intro metrics (weekly or monthly)
+def generate_business_intros(df, is_weekly=False):
+    if is_weekly:
+        # Fewer business intros in a week
+        df["Business Intros"] = [random.randint(0, 3) for _ in range(len(df))]
+    else:
+        # Original monthly logic
+        df["Business Intros"] = [random.randint(0, 10) for _ in range(len(df))]
     return df
 
 
-# Main function that generates randomized test dataFrame
-def create_data():
+# Main function that generates randomized test dataFrame. User can choose to generate weekly or Monthly data
+def create_data(period="monthly"):
     # Create DataFrame and generate random metric values
     df = pd.DataFrame({"Name": randomName.generate_names()})
     df = generate_jobs(df)
-    df = generate_total_hours(df)
+
+    # Apply time scaling based on period
+    if period == "weekly":
+        df = generate_total_hours(df, is_weekly=True)
+    else:  # monthly (default)
+        df = generate_total_hours(df)
+
     df = hour_distribution_engine.distribute_hours(df)
     df = add_sessions(df)
     df = add_customers_helped(df)
     df = add_spqh(df)
     df = add_duration(df)
-    df = nps_medallia_model.generate_nps(df)
     df = generate_sur_and_opportunities(df)
-    df = generate_business_intros(df)
+
+    if period == "weekly":
+        df = nps_medallia_model.generate_nps(df, is_weekly=True)
+        df = generate_business_intros(df, is_weekly=True)
+    else:  # monthly default
+        df = nps_medallia_model.generate_nps(df)
+        df = generate_business_intros(df)
 
     # Display the DataFrame and reorder columns for organization
     df = df[["Jobs", "Type", "Name", "SPQH", "Customers Helped", "Mac Duration", "Mobile Duration", "NPS", "TMS", "SUR",
@@ -168,9 +194,12 @@ def create_data():
              "Daily Download", "Guided", "Connection", "Total Hours"]]
     # Sort based on job tiles and the name in alphabetical order
     df = df.sort_values(by=["Jobs", "Name"])
+
+    # Add period as output file prefix
+    output_file = f"{period}_output.txt"
     # Output to a text file for easy reading and testing
-    with open("output.txt", "w") as f:
+    with open(output_file, "w") as f:
         f.write(df.to_string(index=False))
 
 
-create_data()
+create_data("weekly")

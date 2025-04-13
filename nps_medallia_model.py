@@ -3,16 +3,21 @@ import random
 
 # Function to mimic metrics taken from NPS website. Columns added:
 # NPS, TMS, Surveys, Full Surveys, AppleCare, Trade in, Apple Intelligence
-def generate_nps(df):
+def generate_nps(df, is_weekly=False):
     tms_list = []
     nps_list = []
     surveys_list = []
     full_surveys_list = []
 
     for _ in range(len(df)):
-        # Total responses
-        full_surveys = random.randint(0, 3)
-        surveys = random.randint(1, 11) + full_surveys
+        # Scale down survey counts for weekly metrics
+        if is_weekly:
+            full_surveys = random.randint(0, 1)  # Fewer full surveys in a week
+            surveys = random.randint(1, 3) + full_surveys  # Fewer surveys overall
+        else:
+            # Original monthly logic
+            full_surveys = random.randint(0, 3)
+            surveys = random.randint(1, 11) + full_surveys
         total_responses = surveys
 
         # Weighted random scores (favoring 5s for TMS and lower for NPS)

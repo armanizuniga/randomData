@@ -14,4 +14,5 @@ def generate_names():
         temp_name = fake.name()
         names.append(temp_name)
 
+    print(names)
     return names
