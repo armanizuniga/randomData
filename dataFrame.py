@@ -34,6 +34,7 @@ def generate_total_hours(df):
     df["Total Hours"] = df.apply(generate_hours, axis=1)
 
 
+# Function randomly generates the amount of specific appointment taken dependent on job role
 def add_sessions(df):
     df["Mac Sessions"] = 0
     df["Mobile Sessions"] = 0
@@ -45,12 +46,14 @@ def add_sessions(df):
             mac_hours = row.get("Mac Support Hours", 0)
             mobile_hours = row.get("Mobile Support Hours", 0)
 
-            df.at[idx, "Mac Sessions"] = int(mac_hours * random.uniform(2.5, 3.0))
-            df.at[idx, "Mobile Sessions"] = int(mobile_hours * random.uniform(2.5, 3.3))
+            # You can adjust the range of randomization if you want to increase or decrease appointments
+            df.at[idx, "Mac Sessions"] = int(mac_hours * random.uniform(2.5, 3.3))
+            df.at[idx, "Mobile Sessions"] = int(mobile_hours * random.uniform(2.5, 3.5))
 
         elif role in ["Technical Expert", "Technical Specialist"]:
             mobile_hours = row.get("Mobile Support Hours", 0)
-            df.at[idx, "Mobile Sessions"] = int(mobile_hours * random.uniform(2.3, 3.2))
+            # You can adjust the range of randomization if you want to increase or decrease appointments
+            df.at[idx, "Mobile Sessions"] = int(mobile_hours * random.uniform(2.5, 3.5))
 
     return df
 
@@ -61,14 +64,35 @@ def add_customers_helped(df):
     return df
 
 
+# Function to calculate the average amount sessions taken per queued hour
 def add_spqh(df):
     df["SPQH"] = round(df["Customers Helped"] / (df["Mac Support Hours"] + df["Mobile Support Hours"]), 2)
     return df
 
 
+# Function that adds two more columns about mac duration and mobile duration
+def add_duration(df):
+    df["Mac Duration"] = 0
+    df["Mobile Duration"] = 0
+
+    for idx, row in df.iterrows():
+        role = row["Jobs"]
+
+        if role == "Genius":
+            # You can adjust the range of randomization if you want to increase or decrease appointments
+            df.at[idx, "Mac Duration"] = random.randint(11, 34)
+            df.at[idx, "Mobile Duration"] = random.randint(11, 25)
+
+        elif role in ["Technical Expert", "Technical Specialist"]:
+            # You can adjust the range of randomization if you want to increase or decrease appointments
+            df.at[idx, "Mobile Duration"] = random.randint(11, 25)
+
+    return df
+
+
 # Main function that generates randomized test dataFrame
 def create_data():
-    # Create DataFrame with a column "Name"
+    # Create DataFrame and generate random metric values
     df = pd.DataFrame({"Name": randomName.generate_names()})
     generate_jobs(df)
     generate_total_hours(df)
@@ -76,10 +100,11 @@ def create_data():
     df = add_sessions(df)
     df = add_customers_helped(df)
     df = add_spqh(df)
+    df = add_duration(df)
 
     # Display the DataFrame and reorder columns for organization
-    df = df[["Jobs", "Type", "Name", "SPQH", "Customers Helped", "Mac Sessions", "Mobile Sessions",
-             "Mobile Support Hours", "Mac Support Hours", "iPhone Repair Hours", "Mac Repair Hours",
+    df = df[["Jobs", "Type", "Name", "SPQH", "Customers Helped", "Mac Duration", "Mobile Duration", "Mac Sessions",
+             "Mobile Sessions", "Mobile Support Hours", "Mac Support Hours", "iPhone Repair Hours", "Mac Repair Hours",
              "Repair Pickup", "GB On Point", "Daily Download", "Guided", "Connection", "Total Hours"]]
     df = df.sort_values(by=["Jobs", "Name"])
 
