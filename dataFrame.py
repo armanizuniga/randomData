@@ -91,6 +91,36 @@ def add_duration(df):
     return df
 
 
+# Function to generate fake SUR and opportunities metric
+def generate_sur_and_opportunities(df):
+    opportunities_list = []
+    successful_repairs_list = []
+    sur_list = []
+
+    for _, row in df.iterrows():
+        iphone_hours = row.get('iPhone Repair Hours', 0)
+
+        if iphone_hours > 0:
+            repairs_per_hour = random.choice([1.0, 1.5, 2.0])
+            opportunities = max(1, int(iphone_hours * repairs_per_hour))
+
+            successful_repairs = random.randint(0, opportunities)
+            sur = round((successful_repairs / opportunities) * 100, 2)
+        else:
+            opportunities = 0
+            successful_repairs = 0
+            sur = 0.0
+
+        opportunities_list.append(opportunities)
+        successful_repairs_list.append(successful_repairs)
+        sur_list.append(sur)
+
+    df['Opportunities'] = opportunities_list
+    df['SUR'] = sur_list
+
+    return df
+
+
 # Main function that generates randomized test dataFrame
 def create_data():
     # Create DataFrame and generate random metric values
@@ -103,12 +133,14 @@ def create_data():
     df = add_spqh(df)
     df = add_duration(df)
     df = nps_medallia_model.generate_nps(df)
+    df = generate_sur_and_opportunities(df)
 
     # Display the DataFrame and reorder columns for organization
-    df = df[["Jobs", "Type", "Name", "SPQH", "Customers Helped", "Mac Duration", "Mobile Duration", "NPS", "TMS",
-             "Discussed AppleCare", "Offered Trade In", "Survey Qty", "Full Survey Qty", "Mac Sessions",
-             "Mobile Sessions", "Mobile Support Hours", "Mac Support Hours", "iPhone Repair Hours", "Mac Repair Hours",
-             "Repair Pickup", "GB On Point", "Daily Download", "Guided", "Connection", "Total Hours"]]
+    df = df[["Jobs", "Type", "Name", "SPQH", "Customers Helped", "Mac Duration", "Mobile Duration", "NPS", "TMS", "SUR",
+             "Discussed AppleCare", "Offered Trade In", "Apple Intelligence", "Survey Qty", "Full Survey Qty",
+             "Opportunities", "Mac Sessions", "Mobile Sessions", "Mobile Support Hours", "Mac Support Hours",
+             "iPhone Repair Hours", "Mac Repair Hours", "Repair Pickup", "GB On Point", "Daily Download", "Guided",
+             "Connection", "Total Hours"]]
     df = df.sort_values(by=["Jobs", "Name"])
 
     with open("output.txt", "w") as f:
