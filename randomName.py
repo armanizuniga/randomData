@@ -21,7 +21,6 @@ def generate_names():
 
     # print(names)
     # Add period as output file prefix
-    # output_file = f"names.txt"
     # with open(output_file, "w") as f:
     #   f.write(str(names))
     return names

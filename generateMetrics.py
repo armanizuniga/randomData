@@ -4,6 +4,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import calendar
+import sqlite3
 
 
 def generate_monthly_metrics(start_date=None):
@@ -62,6 +63,10 @@ def generate_monthly_metrics(start_date=None):
         csv_file_path = os.path.join(desktop_path, f"Monthly_Metrics_{month_name}_{year}.csv")
         df.to_csv(csv_file_path, index=False)
         print(f"Data saved to {desktop_path}")
+
+        # Add to your monthly report generator
+        database_name = os.path.join(desktop_path, "employee_metrics.db")
+        save_dataframe_to_sql(df, database_name, f"monthly_metrics_{month_name}_{year}")
 
         # Store DataFrame in our list
         all_dfs.append(df)
@@ -139,6 +144,9 @@ def generate_weekly_data(start_date=None, num_weeks=52):
         # csv_file_path = os.path.join(desktop_path, f"Weekly_Metrics_W{week_number}_{year}.csv")
         # df.to_csv(csv_file_path, index=False)
         # print(f"Data saved to {desktop_path}")
+        # weekly report generator
+        database_name = os.path.join(desktop_path, "employee_metrics.db")
+        save_dataframe_to_sql(df, database_name, f"weekly_metrics_W{week_number}_{year}")
 
         # Store DataFrame in our list
         all_dfs.append(df)
@@ -147,10 +155,34 @@ def generate_weekly_data(start_date=None, num_weeks=52):
     all_weeks_df = pd.concat(all_dfs)
     all_weeks_file_path = os.path.join(desktop_path, f"All_Weekly_Metrics.csv")
     all_weeks_df.to_csv(all_weeks_file_path, index=False)
+    # Add to your monthly report generator
+    database_name = os.path.join(desktop_path, "employee_metrics.db")
+    save_dataframe_to_sql(all_weeks_df, database_name, "all_weekly_metrics")
 
     print(f"Complete dataset of all weeks saved to {all_weeks_file_path}")
 
     return all_dfs
+
+
+def save_dataframe_to_sql(df, database_name, table_name):
+    """
+    Save a pandas DataFrame to a SQLite database
+
+    Parameters:
+    df (DataFrame): The pandas DataFrame to save
+    database_name (str): Name of the database file
+    table_name (str): Name of the table to create/update
+    """
+    # Create a connection to the database (will create the file if it doesn't exist)
+    conn = sqlite3.connect(database_name)
+
+    # Write the DataFrame to a SQL table
+    df.to_sql(table_name, conn, if_exists='replace', index=False)
+
+    # Close the connection
+    conn.close()
+
+    print(f"Data saved to SQL database '{database_name}' in table '{table_name}'")
 
 
 # Usage Monthly:
