@@ -3,6 +3,7 @@ import randomName
 import numpy as np
 import random
 import hour_distribution_engine
+import nps_medallia_model
 
 
 # Function to generate job roles and types then appends to the existing dataFrame
@@ -101,9 +102,11 @@ def create_data():
     df = add_customers_helped(df)
     df = add_spqh(df)
     df = add_duration(df)
+    df = nps_medallia_model.generate_nps(df)
 
     # Display the DataFrame and reorder columns for organization
-    df = df[["Jobs", "Type", "Name", "SPQH", "Customers Helped", "Mac Duration", "Mobile Duration", "Mac Sessions",
+    df = df[["Jobs", "Type", "Name", "SPQH", "Customers Helped", "Mac Duration", "Mobile Duration", "NPS", "TMS",
+             "Discussed AppleCare", "Offered Trade In", "Survey Qty", "Full Survey Qty", "Mac Sessions",
              "Mobile Sessions", "Mobile Support Hours", "Mac Support Hours", "iPhone Repair Hours", "Mac Repair Hours",
              "Repair Pickup", "GB On Point", "Daily Download", "Guided", "Connection", "Total Hours"]]
     df = df.sort_values(by=["Jobs", "Name"])
