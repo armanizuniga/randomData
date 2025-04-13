@@ -8,15 +8,29 @@ import nps_medallia_model
 
 # Function to generate job roles and types then appends to the existing dataFrame
 def generate_jobs(df):
-    # Define job roles and full-time/part-time distribution
-    jobs = ["Genius"] * 10 + ["Technical Expert"] * 10 + ["Technical Specialist"] * 20
-    job_type = ["FT"] * 17 + ["PT"] * 23
+    total_employees = len(df)
 
-    # Randomize the order
+    # Define role distribution
+    num_genius = int(total_employees * 0.25)
+    num_expert = int(total_employees * 0.25)
+    num_specialist = total_employees - num_genius - num_expert
+
+    # Create job roles
+    jobs = (
+            ["Genius"] * num_genius +
+            ["Technical Expert"] * num_expert +
+            ["Technical Specialist"] * num_specialist
+    )
     np.random.shuffle(jobs)
+
+    # Define type distribution
+    num_ft = int(total_employees * 0.5)
+    num_pt = total_employees - num_ft
+
+    job_type = ["FT"] * num_ft + ["PT"] * num_pt
     np.random.shuffle(job_type)
 
-    # Add new columns to the existing dataFrame
+    # Add columns
     df["Jobs"] = jobs
     df["Type"] = job_type
 
