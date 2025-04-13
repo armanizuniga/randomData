@@ -111,29 +111,30 @@ def add_duration(df):
 # Function to generate fake SUR and opportunities metric
 def generate_sur_and_opportunities(df):
     opportunities_list = []
-    successful_repairs_list = []
     sur_list = []
 
     for _, row in df.iterrows():
-        iphone_hours = row.get('iPhone Repair Hours', 0)
+        iphone_hours = row.get("iPhone Repair Hours", 0)
 
         if iphone_hours > 0:
             repairs_per_hour = random.choice([1.0, 1.5, 2.0])
             opportunities = max(1, int(iphone_hours * repairs_per_hour))
 
-            successful_repairs = random.randint(0, opportunities)
-            sur = round((successful_repairs / opportunities) * 100, 2)
+            # Generate random failed repairs between 0 and 3
+            # But ensure failed repairs don't exceed opportunities
+            failed_repairs = min(random.randint(0, 3), opportunities)
+
+            # Calculate success rate based on opportunities minus failed repairs
+            sur = round(((opportunities - failed_repairs) / opportunities) * 100, 2)
         else:
             opportunities = 0
-            successful_repairs = 0
             sur = 0.0
 
         opportunities_list.append(opportunities)
-        successful_repairs_list.append(successful_repairs)
         sur_list.append(sur)
 
-    df['Opportunities'] = opportunities_list
-    df['SUR'] = sur_list
+    df["Opportunities"] = opportunities_list
+    df["SUR"] = sur_list
 
     return df
 
