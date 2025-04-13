@@ -34,6 +34,27 @@ def generate_total_hours(df):
     df["Total Hours"] = df.apply(generate_hours, axis=1)
 
 
+def add_sessions(df):
+    df["Mac Sessions"] = 0
+    df["Mobile Sessions"] = 0
+
+    for idx, row in df.iterrows():
+        role = row["Jobs"]
+
+        if role == "Genius":
+            mac_hours = row.get("Mac Support Hours", 0)
+            mobile_hours = row.get("Mobile Support Hours", 0)
+
+            df.at[idx, "Mac Sessions"] = int(mac_hours * random.uniform(1.7, 2.0))
+            df.at[idx, "Mobile Sessions"] = int(mobile_hours * random.uniform(2.3, 3.2))
+
+        elif role in ["Technical Expert", "Technical Specialist"]:
+            mobile_hours = row.get("Mobile Support Hours", 0)
+            df.at[idx, "Mobile Sessions"] = int(mobile_hours * random.uniform(2.3, 3.2))
+
+    return df
+
+
 # Main function that generates randomized test dataFrame
 def create_data():
     # Create DataFrame with a column "Name"
@@ -41,16 +62,16 @@ def create_data():
     generate_jobs(df)
     generate_total_hours(df)
     df = hour_distribution_engine.distribute_hours(df)
+    df = add_sessions(df)
 
     # Display the DataFrame and reorder columns for organization
-    df = df[["Jobs", "Type", "Name", "Mobile Support Hours", "Mac Support Hours", "iPhone Repair Hours",
-             "Mac Repair Hours", "Repair Pickup", "GB On Point", "Daily Download", "Guided", "Connection",
-             "Total Hours"]]
+    df = df[["Jobs", "Type", "Name", "Mac Sessions", "Mobile Sessions", "Mobile Support Hours", "Mac Support Hours",
+             "iPhone Repair Hours", "Mac Repair Hours", "Repair Pickup", "GB On Point", "Daily Download", "Guided",
+             "Connection", "Total Hours"]]
     df = df.sort_values(by=["Jobs", "Name"])
 
     with open("output.txt", "w") as f:
         f.write(df.to_string(index=False))
-
 
 
 create_data()
