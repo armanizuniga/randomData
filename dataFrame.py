@@ -2,6 +2,7 @@ import pandas as pd
 import randomName
 import numpy as np
 import random
+import hour_distribution_engine
 
 
 # Function to generate job roles and types then appends to the existing dataFrame
@@ -33,17 +34,23 @@ def generate_total_hours(df):
     df["Total Hours"] = df.apply(generate_hours, axis=1)
 
 
-# Main function that generates randomized test dataFrame 
+# Main function that generates randomized test dataFrame
 def create_data():
     # Create DataFrame with a column "Name"
     df = pd.DataFrame({"Name": randomName.generate_names()})
     generate_jobs(df)
     generate_total_hours(df)
+    df = hour_distribution_engine.distribute_hours(df)
 
     # Display the DataFrame and reorder columns for organization
-    df = df[["Jobs", "Type", "Name", "Total Hours"]]
+    df = df[["Jobs", "Type", "Name", "Mobile Support Hours", "Mac Support Hours", "iPhone Repair Hours",
+             "Mac Repair Hours", "Repair Pickup", "GB On Point", "Daily Download", "Guided", "Connection",
+             "Total Hours"]]
     df = df.sort_values(by=["Jobs", "Name"])
-    print(df)
+
+    with open("output.txt", "w") as f:
+        f.write(df.to_string(index=False))
+
 
 
 create_data()
