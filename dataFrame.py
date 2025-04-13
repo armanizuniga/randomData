@@ -19,6 +19,7 @@ def generate_jobs(df):
     df["Type"] = job_type
 
 
+# Function to generate the total amount of hours worked for part-time and full-time employees
 def generate_total_hours(df):
     def generate_hours(row):
         if row["Type"] == "FT":
@@ -28,9 +29,11 @@ def generate_total_hours(df):
         else:
             return 0
 
+    # Applies above function to the Type columns and generates a new column to add to the existing dataFrame
     df["Total Hours"] = df.apply(generate_hours, axis=1)
 
 
+# Main function that generates randomized test dataFrame 
 def create_data():
     # Create DataFrame with a column "Name"
     df = pd.DataFrame({"Name": randomName.generate_names()})
