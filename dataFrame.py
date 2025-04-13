@@ -20,6 +20,8 @@ def generate_jobs(df):
     df["Jobs"] = jobs
     df["Type"] = job_type
 
+    return df
+
 
 # Function to generate the total amount of hours worked for part-time and full-time employees
 def generate_total_hours(df):
@@ -33,6 +35,7 @@ def generate_total_hours(df):
 
     # Applies above function to the Type columns and generates a new column to add to the existing dataFrame
     df["Total Hours"] = df.apply(generate_hours, axis=1)
+    return df
 
 
 # Function randomly generates the amount of specific appointment taken dependent on job role
@@ -121,12 +124,18 @@ def generate_sur_and_opportunities(df):
     return df
 
 
+# Function to generate random business intro metrics
+def generate_business_intros(df):
+    df["Business Intros"] = [random.randint(0, 10) for _ in range(len(df))]
+    return df
+
+
 # Main function that generates randomized test dataFrame
 def create_data():
     # Create DataFrame and generate random metric values
     df = pd.DataFrame({"Name": randomName.generate_names()})
-    generate_jobs(df)
-    generate_total_hours(df)
+    df = generate_jobs(df)
+    df = generate_total_hours(df)
     df = hour_distribution_engine.distribute_hours(df)
     df = add_sessions(df)
     df = add_customers_helped(df)
@@ -134,15 +143,17 @@ def create_data():
     df = add_duration(df)
     df = nps_medallia_model.generate_nps(df)
     df = generate_sur_and_opportunities(df)
+    df = generate_business_intros(df)
 
     # Display the DataFrame and reorder columns for organization
     df = df[["Jobs", "Type", "Name", "SPQH", "Customers Helped", "Mac Duration", "Mobile Duration", "NPS", "TMS", "SUR",
-             "Discussed AppleCare", "Offered Trade In", "Apple Intelligence", "Survey Qty", "Full Survey Qty",
-             "Opportunities", "Mac Sessions", "Mobile Sessions", "Mobile Support Hours", "Mac Support Hours",
-             "iPhone Repair Hours", "Mac Repair Hours", "Repair Pickup", "GB On Point", "Daily Download", "Guided",
-             "Connection", "Total Hours"]]
+             "Business Intros", "Discussed AppleCare", "Offered Trade In", "Apple Intelligence", "Survey Qty",
+             "Full Survey Qty", "Opportunities", "Mac Sessions", "Mobile Sessions", "Mobile Support Hours",
+             "Mac Support Hours", "iPhone Repair Hours", "Mac Repair Hours", "Repair Pickup", "GB On Point",
+             "Daily Download", "Guided", "Connection", "Total Hours"]]
+    # Sort based on job tiles and the name in alphabetical order
     df = df.sort_values(by=["Jobs", "Name"])
-
+    # Output to a text file for easy reading and testing
     with open("output.txt", "w") as f:
         f.write(df.to_string(index=False))
 

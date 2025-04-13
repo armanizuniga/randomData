@@ -24,12 +24,12 @@ def generate_nps(df):
         # NPS Calculation
         nps_promoters = nps_scores.count(5)
         nps_detractors = sum(score <= 3 for score in nps_scores)
-        nps = round(((nps_promoters - nps_detractors) / total_responses) * 100, 2)
+        nps = round(((nps_promoters - nps_detractors) / total_responses) * 100)
 
         # TMS Calculation
         tms_promoters = tms_scores.count(5)
         tms_detractors = sum(score <= 3 for score in tms_scores)
-        tms = round(((tms_promoters - tms_detractors) / total_responses) * 100, 2)
+        tms = round(((tms_promoters - tms_detractors) / total_responses) * 100)
 
         # Store results
         surveys_list.append(surveys)
