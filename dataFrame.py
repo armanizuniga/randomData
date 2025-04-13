@@ -45,8 +45,8 @@ def add_sessions(df):
             mac_hours = row.get("Mac Support Hours", 0)
             mobile_hours = row.get("Mobile Support Hours", 0)
 
-            df.at[idx, "Mac Sessions"] = int(mac_hours * random.uniform(1.9, 2.7))
-            df.at[idx, "Mobile Sessions"] = int(mobile_hours * random.uniform(2.3, 3.2))
+            df.at[idx, "Mac Sessions"] = int(mac_hours * random.uniform(2.5, 3.0))
+            df.at[idx, "Mobile Sessions"] = int(mobile_hours * random.uniform(2.5, 3.3))
 
         elif role in ["Technical Expert", "Technical Specialist"]:
             mobile_hours = row.get("Mobile Support Hours", 0)
@@ -61,6 +61,11 @@ def add_customers_helped(df):
     return df
 
 
+def add_spqh(df):
+    df["SPQH"] = round(df["Customers Helped"] / (df["Mac Support Hours"] + df["Mobile Support Hours"]), 2)
+    return df
+
+
 # Main function that generates randomized test dataFrame
 def create_data():
     # Create DataFrame with a column "Name"
@@ -70,11 +75,12 @@ def create_data():
     df = hour_distribution_engine.distribute_hours(df)
     df = add_sessions(df)
     df = add_customers_helped(df)
+    df = add_spqh(df)
 
     # Display the DataFrame and reorder columns for organization
-    df = df[["Jobs", "Type", "Name", "Customers Helped", "Mac Sessions", "Mobile Sessions", "Mobile Support Hours", "Mac Support Hours",
-             "iPhone Repair Hours", "Mac Repair Hours", "Repair Pickup", "GB On Point", "Daily Download", "Guided",
-             "Connection", "Total Hours"]]
+    df = df[["Jobs", "Type", "Name", "SPQH", "Customers Helped", "Mac Sessions", "Mobile Sessions",
+             "Mobile Support Hours", "Mac Support Hours", "iPhone Repair Hours", "Mac Repair Hours",
+             "Repair Pickup", "GB On Point", "Daily Download", "Guided", "Connection", "Total Hours"]]
     df = df.sort_values(by=["Jobs", "Name"])
 
     with open("output.txt", "w") as f:
