@@ -60,21 +60,20 @@ def generate_monthly_metrics(start_date=None):
         df = df[date_columns + other_columns]
 
         # Save the DataFrame as CSV for easier data processing later
-        csv_file_path = os.path.join(desktop_path, f"Monthly_Metrics_{month_name}_{year}.csv")
-        df.to_csv(csv_file_path, index=False)
-        print(f"Data saved to {desktop_path}")
-
-        # Add to your monthly report generator
-        database_name = os.path.join(desktop_path, "employee_metrics.db")
-        save_dataframe_to_sql(df, database_name, f"monthly_metrics_{month_name}_{year}")
+        # csv_file_path = os.path.join(desktop_path, f"Monthly_Metrics_{month_name}_{year}.csv")
+        # df.to_csv(csv_file_path, index=False)
+        # print(f"Data saved to {desktop_path}")
 
         # Store DataFrame in our list
         all_dfs.append(df)
 
-        # Optionally create a combined yearly dataset
+    # Optionally create a combined yearly dataset
     yearly_df = pd.concat(all_dfs)
     yearly_file_path = os.path.join(desktop_path, f"Yearly_Metrics.csv")
     yearly_df.to_csv(yearly_file_path, index=False)
+    # Add to your monthly report generator
+    database_name = os.path.join(desktop_path, "monthly_employee_metrics.db")
+    save_dataframe_to_sql(yearly_df, database_name, f"monthly_metrics")
 
     print(f"Complete yearly dataset saved to {yearly_file_path}")
 
@@ -144,9 +143,6 @@ def generate_weekly_data(start_date=None, num_weeks=52):
         # csv_file_path = os.path.join(desktop_path, f"Weekly_Metrics_W{week_number}_{year}.csv")
         # df.to_csv(csv_file_path, index=False)
         # print(f"Data saved to {desktop_path}")
-        # weekly report generator
-        database_name = os.path.join(desktop_path, "employee_metrics.db")
-        save_dataframe_to_sql(df, database_name, f"weekly_metrics_W{week_number}_{year}")
 
         # Store DataFrame in our list
         all_dfs.append(df)
@@ -155,9 +151,9 @@ def generate_weekly_data(start_date=None, num_weeks=52):
     all_weeks_df = pd.concat(all_dfs)
     all_weeks_file_path = os.path.join(desktop_path, f"All_Weekly_Metrics.csv")
     all_weeks_df.to_csv(all_weeks_file_path, index=False)
-    # Add to your monthly report generator
-    database_name = os.path.join(desktop_path, "employee_metrics.db")
-    save_dataframe_to_sql(all_weeks_df, database_name, "all_weekly_metrics")
+    # Add to your weekly report generator
+    database_name = os.path.join(desktop_path, "weeks_employee_metrics.db")
+    save_dataframe_to_sql(all_weeks_df, database_name, "weekly_metrics")
 
     print(f"Complete dataset of all weeks saved to {all_weeks_file_path}")
 
@@ -186,7 +182,7 @@ def save_dataframe_to_sql(df, database_name, table_name):
 
 
 # Usage Monthly:
-# test = generate_monthly_metrics()  # Uses current date as starting point
+# test1 = generate_monthly_metrics()  # Uses current date as starting point
 # test = generate_yearly_data("2024-01-01")  # Starts from January 2024
 # Usage Weekly:
-# test = generate_weekly_data()
+test2 = generate_weekly_data(start_date="2025-01-01")
