@@ -140,9 +140,9 @@ def generate_weekly_data(start_date=None, num_weeks=52):
         df = df[date_columns + other_columns]
 
         # Also save as CSV for easier data processing later
-        # csv_file_path = os.path.join(desktop_path, f"Weekly_Metrics_W{week_number}_{year}.csv")
-        # df.to_csv(csv_file_path, index=False)
-        # print(f"Data saved to {desktop_path}")
+        csv_file_path = os.path.join(desktop_path, f"Weekly_Metrics_W{week_number}_{year}.csv")
+        df.to_csv(csv_file_path, index=False)
+        print(f"Data saved to {desktop_path}")
 
         # Store DataFrame in our list
         all_dfs.append(df)
@@ -185,4 +185,4 @@ def save_dataframe_to_sql(df, database_name, table_name):
 # test1 = generate_monthly_metrics()  # Uses current date as starting point
 # test = generate_yearly_data("2024-01-01")  # Starts from January 2024
 # Usage Weekly:
-test2 = generate_weekly_data(start_date="2025-01-01")
+test2 = generate_weekly_data(start_date="2025-01-01", num_weeks=52)

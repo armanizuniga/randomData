@@ -31,8 +31,22 @@ def generate_jobs(df):
     np.random.shuffle(job_type)
 
     # Add columns
-    df["Jobs"] = jobs
-    df["Type"] = job_type
+    # df["Jobs"] = jobs
+    # df["Type"] = job_type
+
+    # Hard coded
+    df["Jobs"] = ['Genius', 'Technical Specialist', 'Technical Specialist', 'Technical Specialist',
+                  'Technical Specialist', 'Technical Specialist', 'Genius', 'Technical Specialist',
+                  'Genius', 'Technical Specialist', 'Technical Expert', 'Technical Specialist', 'Technical Specialist',
+                  'Genius', 'Technical Expert', 'Technical Specialist', 'Technical Specialist', 'Technical Specialist',
+                  'Technical Expert', 'Technical Expert', 'Technical Specialist', 'Genius', 'Genius',
+                  'Technical Expert', 'Genius', 'Technical Expert', 'Genius', 'Technical Expert', 'Technical Expert',
+                  'Technical Specialist', 'Technical Specialist', 'Genius', 'Technical Expert', 'Technical Specialist',
+                  'Genius', 'Technical Specialist', 'Technical Specialist', 'Technical Specialist',
+                  'Technical Specialist', 'Technical Expert']
+    df["Type"] = ['FT', 'PT', 'FT', 'PT', 'FT', 'FT', 'FT', 'FT', 'PT', 'PT', 'PT', 'PT', 'PT', 'FT', 'PT', 'FT', 'FT',
+                  'FT', 'PT', 'PT', 'FT', 'FT', 'PT', 'PT', 'PT', 'FT', 'PT', 'FT', 'FT', 'PT', 'PT', 'PT', 'PT', 'FT',
+                  'FT', 'PT', 'FT', 'FT', 'FT', 'PT']
 
     return df
 
@@ -130,9 +144,9 @@ def generate_sur_and_opportunities(df):
             repairs_per_hour = random.choice([1.0, 1.5, 2.0])
             opportunities = max(1, int(iphone_hours * repairs_per_hour))
 
-            # Generate random failed repairs between 0 and 3
+            # Generate random failed repairs between 0 and 2
             # But ensure failed repairs don't exceed opportunities
-            failed_repairs = min(random.randint(0, 3), opportunities)
+            failed_repairs = min(random.randint(0, 2), opportunities)
 
             # Calculate success rate based on opportunities minus failed repairs
             sur = round(((opportunities - failed_repairs) / opportunities) * 100, 2)
@@ -162,9 +176,9 @@ def generate_business_intros(df, is_weekly=False):
 
 # Main function that generates randomized test dataFrame. User can choose to generate weekly or Monthly data
 def create_data(period="monthly"):
-    # Create DataFrame and generate random metric values
+    # Create DataFrame and generate random metric values. This is Hard Coded now
     df = pd.DataFrame({"Name": randomName.generate_names()})
-    df = generate_jobs(df)
+    df = generate_jobs(df) # Need to hard code this too.
 
     # Generate total hours dependent on period
     if period == "weekly":
